@@ -40,7 +40,7 @@ function season(){
   if(!d)throw new Error("SEASON_START måste vara YYYY-MM-DD");
   return d;
 }
-function numericLevel(a){return Number(a?.current_level||0)+Number(a?.paragon_level||0)}
+function numericLevel(a){return Number(a?.current_level||0)}
 function displayLevel(a){return String(a?.display_level??a?.current_level??"?")}
 
 function classify(member,start){
@@ -74,7 +74,7 @@ function classify(member,start){
 function filterByLevel(members){
   if(!members.length)return [];
   const highest=Math.max(...members.map(m=>m.levelNumeric));
-  return members.filter(m=>highest-m.levelNumeric<MAX_LEVEL_BEHIND);
+  return members.filter(m=>highest-m.levelNumeric<=MAX_LEVEL_BEHIND);
 }
 
 function sortMembers(a){
@@ -107,7 +107,7 @@ function buildMessage(payload){
     "🌊 **HALVTIDSKRIGARNA – VÅGOR**","",
     `📅 **Säsongsstart:** ${key(start)}`,
     `🗓️ **Vågfönster:** ${WAVE_WINDOW_DAYS} dagar`,
-    `📉 **Max eftersläpning:** mindre än ${MAX_LEVEL_BEHIND} grader från högsta i respektive våg`,"",
+    `📉 **Max eftersläpning:** ${MAX_LEVEL_BEHIND} basgrader från högsta i respektive våg`,"",
     ...section("ANDRAVÅG",second),"",
     ...section("TREDJEVÅG",third),"",
     `**Andravåg:** ${second.length} visas (${secondAll.length-second.length} bortfiltrerade)`,
