@@ -139,10 +139,22 @@ function buildMessage(payload){
 async function upsert(channel,content){
   try{
     const recent=await channel.messages.fetch({limit:100});
-    const existing=recent.find(m=>m.author.id===client.user.id&&m.content.startsWith("🌊 **HALVTIDSKRIGARNA – VÅGOR**"));
-    if(existing){await existing.edit({content,allowedMentions:{parse:[]}});return}
-  }catch(e){console.warn("Kunde inte läsa tidigare meddelanden:",e.message)}
-  await channel.send({content,allowedMentions:{parse:[]}});
+    const oldMessages=recent.filter(m=>
+      m.author.id===client.user.id &&
+      m.content.startsWith("🌊 **HALVTIDSKRIGARNA – VÅGOR**")
+    );
+
+    for(const [,msg] of oldMessages){
+      await msg.delete().catch(()=>{});
+    }
+  }catch(e){
+    console.warn("Kunde inte radera tidigare vågmeddelande:",e.message);
+  }
+
+  await channel.send({
+    content,
+    allowedMentions:{parse:[]}
+  });
 }
 
 app.post("/update",async(req,res)=>{
