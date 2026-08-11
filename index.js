@@ -97,9 +97,9 @@ function section(title,members){
 
   members.forEach((m,i)=>{
     if(showStartDate){
-      out.push(`**${i+1}. ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}** · ${m.createdAt}`);
+      out.push(`**${i+1}) ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}** · ${m.createdAt}`);
     }else{
-      out.push(`**${i+1}. ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}**`);
+      out.push(`**${i+1}) ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}**`);
     }
   });
 
