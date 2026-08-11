@@ -88,8 +88,21 @@ function sortMembers(a){
 
 function section(title,members){
   const out=[`🌊 **${title}**`];
-  if(!members.length){out.push("_Inga kvalificerade klanmedlemmar i denna våg._");return out}
-  members.forEach((m,i)=>out.push(`**${i+1}. ${m.name}** — ${m.race} — **Grad ${m.levelDisplay}** — start ${m.createdAt}`));
+  if(!members.length){
+    out.push("_Inga kvalificerade klanmedlemmar i denna våg._");
+    return out;
+  }
+
+  const showStartDate = title === "ANDRAVÅG";
+
+  members.forEach((m,i)=>{
+    if(showStartDate){
+      out.push(`**${i+1}. ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}** · ${m.createdAt}`);
+    }else{
+      out.push(`**${i+1}. ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}**`);
+    }
+  });
+
   return out;
 }
 
