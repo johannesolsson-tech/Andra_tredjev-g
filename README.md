@@ -1,37 +1,32 @@
-# Lanista Våg-bot v1
+# Lanista Våg-bot v2
 
-## Railway Variables
+Nyheter:
+- 6 dagars vågfönster via WAVE_WINDOW_DAYS=6.
+- Bonusgrader efter + ignoreras helt vid jämförelsen. Exempel: 45+15 räknas som 45.
+- Med MAX_LEVEL_BEHIND=10 får en grad 45-spelare gränsen 35; grad 35 visas, grad 34 filtreras bort.
+- Andravåg och Tredjevåg jämförs separat.
+- Visningen behåller t.ex. 45+15, men filtreringen använder endast basgraden 45.
+- Varje gladiator skrivs på en enda rad.
+
+Railway Variables:
 DISCORD_TOKEN
 WAVE_CHANNEL_ID
 UPDATE_SECRET
-SEASON_START=YYYY-MM-DD
-
-För aktuell säsong:
 SEASON_START=2026-08-24
+WAVE_WINDOW_DAYS=6
+MAX_LEVEL_BEHIND=10
 
-## Fasta offsets från säsongsstart
-Människa: Andravåg +12, Tredjevåg +22
-Alv: +1, +16
-Dvärg: +12, +22
-Ork: +12, +23
-Goblin: +12, +25
-Troll: +12, +23
-Salamanth: +12, +25
 
-Odöd saknade vågdatum i underlaget och klassificeras inte.
+## v2.2
+- Varje gladiator renderas som en enda kompakt rad.
+- Andravåg visar namn, ras, grad och startdatum.
+- Tredjevåg visar endast namn, ras och grad.
 
-## Klassificering
-Andravåg = created_at från Andravågsdatum till dagen före Tredjevåg.
-Tredjevåg = created_at från Tredjevågsdatum och framåt.
-Före Andravågsdatum visas inte.
+## v2.3
+- Byter numrering från `1.` till `1)` för att Discord inte ska tolka varje gladiator som ett Markdown-listobjekt och bryta metadata till nästa rad.
 
-## Edge
-Öppna bookmarklet-generator.html.
-Fyll i Railway URL + UPDATE_SECRET.
-Spara javascript-koden som favorit.
-Klicka favoriten när du är inloggad på beta.lanista.se.
-
-## Discord-behörigheter
-View Channel
-Send Messages
-Read Message History
+## v2.4
+- Gäller endast Våg-botten.
+- Vid varje uppdatering raderas tidigare vågmeddelande från botten.
+- Därefter postas ett nytt vågmeddelande längst ner i kanalen.
+- Topplista-botten påverkas inte.

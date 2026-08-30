@@ -117,7 +117,7 @@ function buildMessage(payload){
   const third=sortMembers(filterByLevel(thirdAll));
 
   const lines=[
-    "🌊 **HALVTIDSKRIGARNA – VÅGOR**","",
+    "🌊 **JÄRNPAKTEN – VÅGOR**","",
     `📅 **Säsongsstart:** ${key(start)}`,
     `🗓️ **Vågfönster:** ${WAVE_WINDOW_DAYS} dagar`,
     `📉 **Max eftersläpning:** ${MAX_LEVEL_BEHIND} basgrader från högsta i respektive våg`,"",
@@ -141,7 +141,7 @@ async function upsert(channel,content){
     const recent=await channel.messages.fetch({limit:100});
     const oldMessages=recent.filter(m=>
       m.author.id===client.user.id &&
-      m.content.startsWith("🌊 **HALVTIDSKRIGARNA – VÅGOR**")
+      m.content.startsWith("🌊 **JÄRNPAKTEN – VÅGOR**")
     );
 
     for(const [,msg] of oldMessages){
