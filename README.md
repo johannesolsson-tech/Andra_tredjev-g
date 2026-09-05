@@ -30,3 +30,10 @@ MAX_LEVEL_BEHIND=10
 - Vid varje uppdatering raderas tidigare vågmeddelande från botten.
 - Därefter postas ett nytt vågmeddelande längst ner i kanalen.
 - Topplista-botten påverkas inte.
+
+## v2.5 – kompakt utskrift + alver separat
+- Discord-utskriften visar bara rubrik, Andravåg/Tredjevåg och `Namn · Grad`.
+- Alver räknas i ett eget -10-spann och påverkar inte övriga raser.
+- Alla andra raser räknas tillsammans mot högsta basgrad, med `MAX_LEVEL_BEHIND=10`.
+- Bonusgrader efter `+` ignoreras fortfarande vid filtreringen.
+- Bookmarklet använder `lanista.se` och klan 5.

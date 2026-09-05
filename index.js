@@ -64,6 +64,7 @@ function classify(member,start){
   return {
     name:String(a.name),
     race:rule.sv,
+    raceKey:String(a.race.name).toUpperCase(),
     levelDisplay:displayLevel(a),
     levelNumeric:numericLevel(a),
     createdAt:key(created),
@@ -73,8 +74,19 @@ function classify(member,start){
 
 function filterByLevel(members){
   if(!members.length)return [];
-  const highest=Math.max(...members.map(m=>m.levelNumeric));
-  return members.filter(m=>highest-m.levelNumeric<=MAX_LEVEL_BEHIND);
+
+  // Alver ska inte påverka eller påverkas av -10-spannet för övriga raser.
+  // De bedöms endast mot andra alver. Alla andra raser delar samma -10-spann.
+  const elves=members.filter(m=>m.raceKey==="ELF");
+  const others=members.filter(m=>m.raceKey!=="ELF");
+
+  const filterGroup=(group)=>{
+    if(!group.length)return [];
+    const highest=Math.max(...group.map(m=>m.levelNumeric));
+    return group.filter(m=>highest-m.levelNumeric<=MAX_LEVEL_BEHIND);
+  };
+
+  return [...filterGroup(others),...filterGroup(elves)];
 }
 
 function sortMembers(a){
@@ -93,14 +105,8 @@ function section(title,members){
     return out;
   }
 
-  const showStartDate = title === "ANDRAVÅG";
-
-  members.forEach((m,i)=>{
-    if(showStartDate){
-      out.push(`**${i+1}) ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}** · ${m.createdAt}`);
-    }else{
-      out.push(`**${i+1}) ${m.name}** · ${m.race} · **Grad ${m.levelDisplay}**`);
-    }
+  members.forEach((m)=>{
+    out.push(`**${m.name}** · Grad ${m.levelDisplay}`);
   });
 
   return out;
@@ -117,22 +123,11 @@ function buildMessage(payload){
   const third=sortMembers(filterByLevel(thirdAll));
 
   const lines=[
-    "🌊 **JÄRNPAKTEN – VÅGOR**","",
-    `📅 **Säsongsstart:** ${key(start)}`,
-    `🗓️ **Vågfönster:** ${WAVE_WINDOW_DAYS} dagar`,
-    `📉 **Max eftersläpning:** ${MAX_LEVEL_BEHIND} basgrader från högsta i respektive våg`,"",
+    "🌊 **HALVTIDSKRIGARNA – VÅGOR**","",
     ...section("ANDRAVÅG",second),"",
-    ...section("TREDJEVÅG",third),"",
-    `**Andravåg:** ${second.length} visas (${secondAll.length-second.length} bortfiltrerade)`,
-    `**Tredjevåg:** ${third.length} visas (${thirdAll.length-third.length} bortfiltrerade)`
+    ...section("TREDJEVÅG",third)
   ];
 
-  const d=new Date(payload.updatedAt||Date.now());
-  if(!Number.isNaN(d.getTime())){
-    const stamp=new Intl.DateTimeFormat("sv-SE",{timeZone:"Europe/Stockholm",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).format(d);
-    lines.push(`_Senast uppdaterad: ${stamp}_`);
-  }
-  lines.push("_Våg bestäms av startdatum + ras. Grad hämtas från Lanista._");
   return lines.join("\n").slice(0,2000);
 }
 
@@ -141,7 +136,7 @@ async function upsert(channel,content){
     const recent=await channel.messages.fetch({limit:100});
     const oldMessages=recent.filter(m=>
       m.author.id===client.user.id &&
-      m.content.startsWith("🌊 **JÄRNPAKTEN – VÅGOR**")
+      m.content.startsWith("🌊 **HALVTIDSKRIGARNA – VÅGOR**")
     );
 
     for(const [,msg] of oldMessages){
