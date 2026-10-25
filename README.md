@@ -1,3 +1,11 @@
+# Våg-bot – klan 2 och verifierade Railway-svar
+
+Bokmärket använder klan 2, visar riktig HTTP-status och bekräftar Discord-uppdatering först när servern svarar OK. Servern har CORS för lanista.se. Vågregler och Discord-format är oförändrade.
+
+Efter deploy: skapa ett nytt bokmärke från bookmarklet-generator.html. Ej live-testat.
+
+---
+
 # Lanista Våg-bot v2
 
 Nyheter:
