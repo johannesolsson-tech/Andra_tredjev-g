@@ -24,6 +24,17 @@ const RULES={
 const client=new Client({intents:[GatewayIntentBits.Guilds]});
 const app=express();
 app.use(express.text({type:"*/*",limit:"500kb"}));
+app.use((req,res,next)=>{
+ const origin=req.headers.origin;
+ if(["https://lanista.se","https://www.lanista.se"].includes(origin)){
+  res.setHeader("Access-Control-Allow-Origin",origin);
+  res.setHeader("Vary","Origin");
+ }
+ res.setHeader("Access-Control-Allow-Methods","GET,POST,OPTIONS");
+ res.setHeader("Access-Control-Allow-Headers","Content-Type");
+ if(req.method==="OPTIONS")return res.sendStatus(204);
+ next();
+});
 
 app.get("/",(_,res)=>res.send("Lanista Våg-bot v2 är online."));
 app.get("/health",(_,res)=>res.json({ok:true,discordReady:client.isReady(),waveWindowDays:WAVE_WINDOW_DAYS,maxLevelBehind:MAX_LEVEL_BEHIND}));
@@ -164,7 +175,7 @@ app.post("/update",async(req,res)=>{
     await upsert(channel,buildMessage(payload));
     console.log(`Våglistan uppdaterad från ${payload.members.length} klanmedlemmar.`);
     res.send("OK");
-  }catch(e){console.error(e);res.status(500).send("Internt fel")}
+  }catch(e){console.error(e);res.status(500).send("Internt fel: "+(e?.message||String(e)))}
 });
 
 client.once("ready",()=>{
