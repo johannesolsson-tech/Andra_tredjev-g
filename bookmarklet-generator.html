@@ -1,19 +1,32 @@
 <!doctype html><html lang="sv"><meta charset="utf-8"><title>Lanista Våg-bot</title>
-<style>body{font-family:system-ui;max-width:800px;margin:40px auto;padding:0 20px}input,textarea{width:100%;box-sizing:border-box;padding:10px;margin:6px 0 16px}textarea{height:180px;font-family:monospace}button{padding:10px 16px}</style>
-<h1>Lanista Våg-bot – bokmärkesgenerator</h1>
-<label>Railway URL</label><input id="u" placeholder="https://din-vag-bot.up.railway.app">
-<label>UPDATE_SECRET</label><input id="s" type="password">
-<button onclick="make()">Skapa kod</button>
-<h2>Bokmärkets URL</h2><textarea id="o" readonly></textarea>
-<p><b>Obs:</b> Dela inte bokmärket/koden offentligt. Den innehåller UPDATE_SECRET, men inte Lanista-cookie, lösenord eller Discord-token.</p>
+<style>body{font:16px system-ui;max-width:800px;margin:40px auto;padding:0 20px}input,textarea{box-sizing:border-box;width:100%;padding:10px;margin:6px 0 16px}textarea{height:200px}button{padding:10px 16px}</style>
+<h1>Andra-/tredjevågsboten – bokmärkesgenerator</h1>
+<p>Hämtar klan 2 och visar riktiga felmeddelanden från Railway.</p>
+<label>Railway URL<input id="url" placeholder="https://din-bot.up.railway.app"></label>
+<label>UPDATE_SECRET<input id="secret" type="password"></label>
+<button id="make">Skapa bokmärke</button>
+<h2>Bokmärkets URL</h2><textarea id="output" readonly></textarea>
+<p>Dela inte bokmärkeskoden. Den innehåller UPDATE_SECRET.</p>
 <script>
-const T="javascript:(async()=>{try{const R=\"DIN_RAILWAY_URL\".replace(/\\/$/,\"\"),S=\"DITT_UPDATE_SECRET\";if(location.hostname!==\"lanista.se\"){alert(\"Öppna lanista.se och logga in först.\");return}const r=await fetch(\"/api/clans/5/members?paginate=false\",{credentials:\"include\"});if(!r.ok)throw new Error(\"Kunde inte hämta klanmedlemmar. Är du inloggad?\");const members=await r.json();const body=JSON.stringify({secret:S,members,updatedAt:new Date().toISOString()});await fetch(R+\"/update\",{method:\"POST\",mode:\"no-cors\",headers:{\"Content-Type\":\"text/plain;charset=UTF-8\"},body});alert(\"Våglistan skickades till Discord. Klanmedlemmar hämtade: \"+members.length)}catch(e){console.error(e);alert(\"Kunde inte uppdatera våglistan: \"+e.message)}})();";
-function make(){
- const u=document.getElementById('u').value.trim().replace(/\/$/,'');
- const s=document.getElementById('s').value.trim();
- if(!u.startsWith('https://'))return alert('Railway-URL måste börja med https://');
- if(s.length<12)return alert('Använd en längre UPDATE_SECRET.');
- const x=T.replace('DIN_RAILWAY_URL',u).replace('DITT_UPDATE_SECRET',s);
- document.getElementById('o').value=x;navigator.clipboard?.writeText(x).catch(()=>{});
-}
+const runner=async function run(c){
+ try{
+  if(!["lanista.se","www.lanista.se"].includes(location.hostname))throw Error("Öppna lanista.se först.");
+  const r=await fetch("/api/clans/2/members?paginate=false",{credentials:"include"});
+  if(!r.ok)throw Error("Lanista medlemslista HTTP "+r.status);
+  const data=await r.json();
+  const members=Array.isArray(data)?data:(Array.isArray(data?.data)?data.data:Array.isArray(data?.members)?data.members:null);
+  if(!members)throw Error("Okänt format på medlemslistan.");
+  if(!members.length)throw Error("Inga medlemmar hittades. Uppdatering avbruten.");
+  const response=await fetch(c.url+"/update",{method:"POST",headers:{"Content-Type":"text/plain;charset=UTF-8"},body:JSON.stringify({secret:c.secret,members,updatedAt:new Date().toISOString()})});
+  const message=await response.text();
+  if(!response.ok)throw Error("Railway HTTP "+response.status+": "+message);
+  alert("Våglistan uppdaterad i Discord! "+members.length+" klanmedlemmar hämtade.");
+ }catch(e){console.error(e);alert("Våglistan kunde inte uppdateras: "+e.message);}
+};
+document.getElementById("make").onclick=()=>{
+ const url=document.getElementById("url").value.trim().replace(/\/$/,"");
+ const secret=document.getElementById("secret").value;
+ if(!/^https:\/\//.test(url)||!secret)return alert("Fyll i HTTPS Railway-adress och UPDATE_SECRET.");
+ document.getElementById("output").value="javascript:("+runner.toString()+")("+JSON.stringify({url,secret})+")";
+};
 </script></html>
