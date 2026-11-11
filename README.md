@@ -45,3 +45,10 @@ MAX_LEVEL_BEHIND=10
 - Alla andra raser räknas tillsammans mot högsta basgrad, med `MAX_LEVEL_BEHIND=10`.
 - Bonusgrader efter `+` ignoreras fortfarande vid filtreringen.
 - Bookmarklet använder `lanista.se` och klan 5.
+
+
+## v2.6 – separata vågfönster
+- Andravåg: 6 dagar (SECOND_WAVE_WINDOW_DAYS=6). Befintliga WAVE_WINDOW_DAYS används som bakåtkompatibel inställning för Andravåg.
+- Tredjevåg: 10 dagar (THIRD_WAVE_WINDOW_DAYS=10).
+- Om THIRD_WAVE_WINDOW_DAYS inte anges används 10 dagar.
+- Rasernas startdagar och gradfiltrering är oförändrade.

@@ -3,7 +3,8 @@ const {Client,GatewayIntentBits}=require("discord.js");
 
 const {DISCORD_TOKEN,WAVE_CHANNEL_ID,UPDATE_SECRET,SEASON_START}=process.env;
 const PORT=process.env.PORT||3000;
-const WAVE_WINDOW_DAYS=Number(process.env.WAVE_WINDOW_DAYS||6);
+const SECOND_WAVE_WINDOW_DAYS=Number(process.env.SECOND_WAVE_WINDOW_DAYS||process.env.WAVE_WINDOW_DAYS||6);
+const THIRD_WAVE_WINDOW_DAYS=Number(process.env.THIRD_WAVE_WINDOW_DAYS||10);
 const MAX_LEVEL_BEHIND=Number(process.env.MAX_LEVEL_BEHIND||10);
 
 if(!DISCORD_TOKEN||!WAVE_CHANNEL_ID||!UPDATE_SECRET||!SEASON_START){
@@ -37,7 +38,7 @@ app.use((req,res,next)=>{
 });
 
 app.get("/",(_,res)=>res.send("Lanista Våg-bot v2 är online."));
-app.get("/health",(_,res)=>res.json({ok:true,discordReady:client.isReady(),waveWindowDays:WAVE_WINDOW_DAYS,maxLevelBehind:MAX_LEVEL_BEHIND}));
+app.get("/health",(_,res)=>res.json({ok:true,discordReady:client.isReady(),secondWaveWindowDays:SECOND_WAVE_WINDOW_DAYS,thirdWaveWindowDays:THIRD_WAVE_WINDOW_DAYS,maxLevelBehind:MAX_LEVEL_BEHIND}));
 
 function dateOnly(v){
   const d=new Date(v);
@@ -64,8 +65,8 @@ function classify(member,start){
 
   const secondStart=addDays(start,rule.second);
   const thirdStart=addDays(start,rule.third);
-  const secondEnd=addDays(secondStart,WAVE_WINDOW_DAYS-1);
-  const thirdEnd=addDays(thirdStart,WAVE_WINDOW_DAYS-1);
+  const secondEnd=addDays(secondStart,SECOND_WAVE_WINDOW_DAYS-1);
+  const thirdEnd=addDays(thirdStart,THIRD_WAVE_WINDOW_DAYS-1);
 
   let wave=null;
   if(created>=secondStart&&created<=secondEnd)wave="second";
@@ -181,7 +182,8 @@ app.post("/update",async(req,res)=>{
 client.once("ready",()=>{
   console.log(`Discord: inloggad som ${client.user.tag}`);
   console.log(`Säsongsstart: ${SEASON_START}`);
-  console.log(`Vågfönster: ${WAVE_WINDOW_DAYS} dagar`);
+  console.log(`Andravåg: ${SECOND_WAVE_WINDOW_DAYS} dagar`);
+  console.log(`Tredjevåg: ${THIRD_WAVE_WINDOW_DAYS} dagar`);
   console.log(`Max gradskillnad: ${MAX_LEVEL_BEHIND}`);
 });
 
